@@ -1,0 +1,43 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <span class="eyebrow">MY CIVIC ACTIVITY</span>
+  <h1>Dashboard</h1>
+
+  <div class="stats-row">
+    <div class="stat-box"><span class="stat-num"><%= stats.total %></span><span class="stat-label">Total Reports</span></div>
+    <div class="stat-box"><span class="stat-num"><%= stats.reported %></span><span class="stat-label">Reported</span></div>
+    <div class="stat-box"><span class="stat-num"><%= stats.inProgress %></span><span class="stat-label">In Progress</span></div>
+    <div class="stat-box"><span class="stat-num"><%= stats.resolved %></span><span class="stat-label">Resolved</span></div>
+    <div class="stat-box"><span class="stat-num"><%= stats.totalUpvotesReceived %></span><span class="stat-label">Upvotes Received</span></div>
+  </div>
+
+  <div class="issues-header">
+    <h3 class="section-label" style="margin-top: 1rem;">Recent Reports</h3>
+    <a href="/issues/my" class="btn btn-outline">View All My Reports</a>
+  </div>
+
+  <% if (recentIssues.length === 0) { %>
+    <div class="empty-state">
+      <p>You haven't reported any issues yet.</p>
+      <a href="/issues/new" class="btn btn-primary">Report an Issue</a>
+    </div>
+  <% } else { %>
+    <div class="issue-grid">
+      <% recentIssues.forEach(issue => { %>
+        <a href="/issues/<%= issue._id %>" class="issue-card">
+          <div class="issue-card-top">
+            <span class="tag tag-<%= issue.status %>"><%= issue.status.replace('_', ' ').toUpperCase() %></span>
+            <span class="issue-id">#CIV-<%= issue._id.toString().slice(-6).toUpperCase() %></span>
+          </div>
+          <h3><%= issue.title %></h3>
+          <p class="issue-meta"><%= issue.category.replace('_', ' ') %></p>
+          <div class="issue-card-bottom">
+            <span class="upvote-count">▲ <%= issue.upvotes.length %></span>
+            <span class="reported-by"><%= new Date(issue.createdAt).toLocaleDateString() %></span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</section>

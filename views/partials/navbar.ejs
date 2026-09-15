@@ -1,0 +1,59 @@
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="brand">
+      <span class="brand-mark">CT</span>
+         <span class="brand-name">CivicTrack</span>
+      <div class="navbar-actions">
+      <a href="/notifications" class="nav-bell" title="Notifications">
+                <span class="bell-icon">🔔</span>
+
+                <% if (typeof unreadCount !== "undefined" && unreadCount > 0) { %>
+                    <span class="nav-bell-badge">
+                        <%= unreadCount > 99 ? "99+" : unreadCount %>
+                    </span>
+                <% } %>
+            </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" type="button">☰</button>
+
+    <div class="nav-links" id="navLinks">
+      <!-- <a href="/issues">Browse Issues</a> -->
+
+      <% if (currUser) { %>
+        <% if (currUser.role === 'citizen') { %>
+          <a href="/dashboard">Dashboard</a>
+           <a href="/issues/my">My Complaints</a>
+           <a href="/issues/new" class="btn-nav-primary">+ Report Issue</a>
+          <!-- <a href="/issues">Browse Issues</a> -->
+        <% } %>
+        <% if (currUser.role === 'admin' || currUser.role === 'staff') { %>
+          <a href="/admin/dashboard">Manage Issues</a>
+        <% } %>
+        <% if (currUser.role === 'staff') { %>
+          <a href="/staff/dashboard">Dashboard</a>
+          <a href="/staff/assigned">My Assigned</a>
+          <!-- <a href="/staff/department">Dept Issues</a> -->
+        <% } %>
+        <% if (currUser.role === 'admin') { %>
+          <a href="/admin/staff">Staff</a>
+          <a href="/admin/users">Users</a>
+          <a href="/admin/departments">Departments</a>
+          <a href="/admin/analytics">Analytics</a>
+        <% } %>
+        <a href="/profile"><%= currUser.username %></a>
+             <a href="/contact">Contact Us</a>
+        <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register" class="btn-nav-primary">Sign Up</a>
+      <% } %>
+    </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  document.getElementById('navToggle').addEventListener('click', function () {
+    document.getElementById('navLinks').classList.toggle('nav-open');
+  });
+</script>

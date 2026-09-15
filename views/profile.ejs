@@ -1,0 +1,47 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="form-page">
+  <span class="eyebrow">ACCOUNT</span>
+  <h1>My Profile</h1>
+
+  <div class="show-grid">
+    <div class="show-main">
+      <div class="auth-card" style="margin: 0;">
+        <h3 class="section-label" style="margin-top: 0;">Profile Info</h3>
+        <form action="/profile" method="POST" class="form">
+          <label for="username">Name</label>
+          <input type="text" id="username" name="username" value="<%= currUser.username %>" required>
+
+          <label for="email">Email</label>
+          <input type="email" id="email" value="<%= currUser.email %>" disabled>
+
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" value="<%= currUser.phone || '' %>">
+
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="show-sidebar">
+      <div class="sidebar-card">
+        <h3 class="section-label" style="margin-top: 0;">Account</h3>
+        <div class="sidebar-row"><span class="stamp-label">Role</span><span><%= currUser.role %></span></div>
+        <div class="sidebar-row"><span class="stamp-label">Joined</span><span><%= new Date(currUser.createdAt).toLocaleDateString() %></span></div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3 class="section-label" style="margin-top: 0;">Change Password</h3>
+        <form action="/profile/password" method="POST" class="form">
+          <label for="currentPassword">Current Password</label>
+          <input type="password" id="currentPassword" name="currentPassword" required>
+
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" name="newPassword" required minlength="6">
+
+          <button type="submit" class="btn btn-outline btn-block">Update Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

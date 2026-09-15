@@ -1,0 +1,44 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <div class="issues-header">
+    <div>
+      <span class="eyebrow">ADMIN &middot; TEAM</span>
+      <h1>Staff Management</h1>
+    </div>
+    <a href="/admin/staff/new" class="btn btn-primary">+ Create Staff Account</a>
+  </div>
+
+  <% if (staffMembers.length === 0) { %>
+    <div class="empty-state">
+      <p>No staff accounts yet.</p>
+      <a href="/admin/staff/new" class="btn btn-primary">Create the first one</a>
+    </div>
+  <% } else { %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Department</th>
+          <th>Assigned</th><th>Resolved</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% staffMembers.forEach(staff => { %>
+          <tr>
+            <td><%= staff.username %></td>
+            <td><%= staff.email %></td>
+            <td><%= staff.department ? staff.department.name : '—' %></td>
+            <td><%= staff.assignedCount %></td>
+            <td><%= staff.resolvedCount %></td>
+            <td class="action-cell">
+              <a href="/admin/staff/<%= staff._id %>/edit" class="btn btn-outline" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Edit</a>
+              <form action="/admin/staff/<%= staff._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Remove this staff account?')">
+                <button type="submit" class="btn btn-danger" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Remove</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</section>

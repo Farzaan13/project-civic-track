@@ -1,0 +1,92 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="issues-page">
+
+  <div class="issues-header">
+    <div>
+      <span class="eyebrow">MY REPORTS</span>
+      <h1>My Complaints</h1>
+      <p class="page-sub">
+        Track all civic issues that you have reported.
+      </p>
+    </div>
+
+    <a href="/issues/new" class="btn btn-primary">
+      + Report Issue
+    </a>
+  </div>
+
+  <% if (issues.length === 0) { %>
+
+    <div class="empty-state">
+      <h3>No complaints yet</h3>
+      <p>You haven't reported any civic issues.</p>
+
+      <a href="/issues/new" class="btn btn-primary">
+        Report Your First Issue
+      </a>
+    </div>
+
+  <% } else { %>
+
+    <div class="issue-grid">
+
+      <% issues.forEach(issue => { %>
+
+        <a href="/issues/<%= issue._id %>" class="issue-card">
+
+          <div class="issue-card-top">
+
+            <span class="tag tag-<%= issue.status %>">
+              <%= issue.status.replace('_', ' ').toUpperCase() %>
+            </span>
+
+            <span class="issue-id">
+              #CIV-<%= issue._id.toString().slice(-6).toUpperCase() %>
+            </span>
+
+          </div>
+
+          <h3>
+            <%= issue.title %>
+          </h3>
+
+          <p class="issue-meta">
+            <%= issue.category.replace('_', ' ') %>
+            &middot;
+            <%= issue.address || 'Location pinned' %>
+          </p>
+
+          <div class="issue-card-bottom">
+
+            <span>
+              Priority:
+              <strong>
+                <%= ['', 'Low', 'Medium', 'High'][issue.priority] %>
+              </strong>
+            </span>
+
+            <span>
+              <%= issue.createdAt.toDateString() %>
+            </span>
+
+          </div>
+
+          <% if (issue.assignedDept) { %>
+
+            <p class="issue-meta">
+              Department:
+              <strong><%= issue.assignedDept.name %></strong>
+            </p>
+
+          <% } %>
+
+        </a>
+
+      <% }) %>
+
+    </div>
+
+  <% } %>
+
+</section>

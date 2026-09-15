@@ -1,0 +1,35 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="issues-page">
+  <span class="eyebrow">STAFF</span>
+  <h1>Department Issues</h1>
+
+  <% if (noDepartment) { %>
+    <div class="empty-state">
+      <p>You aren't assigned to a department yet. Contact your admin to get set up.</p>
+    </div>
+  <% } else if (issues.length === 0) { %>
+    <div class="empty-state">
+      <p>No issues have been routed to your department yet.</p>
+    </div>
+  <% } else { %>
+    <div class="issue-grid">
+      <% issues.forEach(issue => { %>
+        <a href="/issues/<%= issue._id %>" class="issue-card">
+          <div class="issue-card-top">
+            <span class="tag tag-<%= issue.status %>"><%= issue.status.replace('_', ' ').toUpperCase() %></span>
+            <span class="issue-id">#CIV-<%= issue._id.toString().slice(-6).toUpperCase() %></span>
+          </div>
+          <h3><%= issue.title %></h3>
+          <p class="issue-meta"><%= issue.category.replace('_', ' ') %></p>
+          <div class="issue-card-bottom">
+            <span class="upvote-count">▲ <%= issue.upvotes.length %></span>
+            <span class="reported-by">
+              <%= issue.assignedStaff ? 'Assigned: ' + issue.assignedStaff.username : 'Unassigned' %>
+            </span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</section>

@@ -1,0 +1,33 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="form-page">
+  <span class="eyebrow">ADMIN &middot; DASHBOARD</span>
+  <h1>Create Staff Account</h1>
+  <p class="page-sub">Add a new municipal staff member and assign them to a department.</p>
+
+  <div class="auth-card" style="margin: 0;">
+    <form action="/admin/staff" method="POST" class="form">
+      <label for="username">Name</label>
+      <input type="text" id="username" name="username" placeholder="e.g. Ramesh Kumar" required autofocus>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required minlength="6">
+
+      <label for="department">Department</label>
+      <select id="department" name="department" required>
+        <option value="">Select department</option>
+        <% departments.forEach(dept => { %>
+          <option value="<%= dept._id %>"><%= dept.name %></option>
+        <% }) %>
+      </select>
+
+      <label for="phone">Phone (optional)</label>
+      <input type="tel" id="phone" name="phone">
+
+      <button type="submit" class="btn btn-primary btn-block">Create Staff Account</button>
+    </form>
+  </div>
+</section>

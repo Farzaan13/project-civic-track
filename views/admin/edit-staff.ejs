@@ -1,0 +1,31 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="form-page">
+  <span class="eyebrow">ADMIN &middot; TEAM</span>
+  <h1>Edit Staff Member</h1>
+
+  <div class="auth-card" style="margin: 0;">
+    <form action="/admin/staff/<%= staffMember._id %>?_method=PUT" method="POST" class="form">
+      <label for="username">Name</label>
+      <input type="text" id="username" name="username" value="<%= staffMember.username %>" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" value="<%= staffMember.email %>" disabled>
+
+      <label for="department">Department</label>
+      <select id="department" name="department">
+        <option value="">Unassigned</option>
+        <% departments.forEach(dept => { %>
+          <option value="<%= dept._id %>" <%= staffMember.department && staffMember.department.equals(dept._id) ? 'selected' : '' %>>
+            <%= dept.name %>
+          </option>
+        <% }) %>
+      </select>
+
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone" value="<%= staffMember.phone || '' %>">
+
+      <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+    </form>
+  </div>
+</section>

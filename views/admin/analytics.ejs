@@ -1,0 +1,83 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <span class="eyebrow">INSIGHTS</span>
+  <h1>Analytics</h1>
+
+  <div class="analytics-grid">
+    <div class="sidebar-card">
+      <h3 class="section-label">Issues by Category</h3>
+      <% byCategory.forEach(c => { %>
+        <div class="bar-row">
+          <span class="bar-label"><%= c._id.replace('_',' ') %></span>
+          <div class="bar-track"><div class="bar-fill" style="width: <%= Math.min(c.count * 10, 100) %>%"></div></div>
+          <span class="bar-count"><%= c.count %></span>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="sidebar-card">
+      <h3 class="section-label">Issues by Status</h3>
+      <% byStatus.forEach(s => { %>
+        <div class="bar-row">
+          <span class="bar-label"><%= s._id.replace('_',' ') %></span>
+          <div class="bar-track"><div class="bar-fill" style="width: <%= Math.min(s.count * 10, 100) %>%"></div></div>
+          <span class="bar-count"><%= s.count %></span>
+        </div>
+      <% }) %>
+    </div>
+
+      <div class="sidebar-card">
+      <h3 class="section-label">Avg. Resolution Time</h3>
+      <p class="big-stat"><%= avgResolutionHours.toFixed(1) %> hrs</p>
+    </div>
+
+    <div class="sidebar-card">
+      <h3 class="section-label">Citizen Satisfaction</h3>
+      <% if (ratingCount > 0) { %>
+        <p class="big-stat"><%= avgRating.toFixed(1) %> / 5</p>
+        <p class="muted">based on <%= ratingCount %> rating<%= ratingCount === 1 ? '' : 's' %></p>
+      <% } else { %>
+        <p class="muted">No feedback submitted yet.</p>
+      <% } %>
+    </div>
+
+    <div class="sidebar-card">
+      <h3 class="section-label">Staff Performance</h3>
+      <% if (staffPerformance.length === 0) { %>
+        <p class="muted">No resolved issues yet.</p>
+      <% } else { %>
+        <% staffPerformance.forEach(s => { %>
+          <div class="bar-row">
+            <span class="bar-label"><%= s.name %></span>
+            <div class="bar-track"><div class="bar-fill" style="width: <%= Math.min(s.resolvedCount * 10, 100) %>%"></div></div>
+            <span class="bar-count"><%= s.resolvedCount %></span>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
+    <div class="sidebar-card" style="grid-column: 1 / -1;">
+      <h3 class="section-label">Department Performance</h3>
+      <% if (departmentPerformance.length === 0) { %>
+        <p class="muted">No departments set up yet.</p>
+      <% } else { %>
+        <table class="admin-table">
+          <thead>
+            <tr><th>Department</th><th>Total</th><th>Resolved</th><th>Overdue</th></tr>
+          </thead>
+          <tbody>
+            <% departmentPerformance.forEach(d => { %>
+              <tr>
+                <td><%= d.name %></td>
+                <td><%= d.total %></td>
+                <td><%= d.resolved %></td>
+                <td><%= d.overdue > 0 ? d.overdue : '—' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</section>

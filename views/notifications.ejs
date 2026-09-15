@@ -1,0 +1,30 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <span class="eyebrow">UPDATES</span>
+  <h1>Notifications</h1>
+
+  <% if (notifications.length === 0) { %>
+    <div class="empty-state">
+      <p>No notifications yet. You'll see updates here when your reported issues change status.</p>
+    </div>
+  <% } else { %>
+    <div class="timeline" style="margin-top: 1.5rem;">
+      <% notifications.forEach(note => { %>
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <div class="timeline-content sidebar-card" style="margin-bottom: 0;">
+            <p style="margin: 0 0 0.4rem;">
+              <% if (note.issue) { %>
+                <a href="/issues/<%= note.issue._id %>"><%= note.message %></a>
+              <% } else { %>
+                <%= note.message %>
+              <% } %>
+            </p>
+            <span class="timeline-date"><%= new Date(note.createdAt).toLocaleString() %></span>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</section>

@@ -1,0 +1,77 @@
+<% layout('layouts/boilerplate') %>
+
+  <section class="issues-page">
+    <div class="issues-header">
+      <div>
+        <span class="eyebrow">LIVE FEED</span>
+        <h1>Reported Issues</h1>
+      </div>
+      <form class="filter-bar" method="GET">
+        <select name="category" onchange="this.form.submit()">
+          <option value="">All Categories</option>
+          <option value="pothole" <%=category==='pothole' ? 'selected' : '' %>>Pothole</option>
+          <option value="road_damage" <%=category==='road_damage' ? 'selected' : '' %>>Road Damage</option>
+          <option value="garbage" <%=category==='garbage' ? 'selected' : '' %>>Garbage</option>
+          <option value="streetlight" <%=category==='streetlight' ? 'selected' : '' %>>Streetlight</option>
+          <option value="water_leakage" <%=category==='water_leakage' ? 'selected' : '' %>>Water Leakage</option>
+          <option value="electricity" <%=category==='electricity' ? 'selected' : '' %>>Electricity</option>
+          <option value="drainage" <%=category==='drainage' ? 'selected' : '' %>>Drainage</option>
+        </select>
+        <select name="status" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="reported" <%=status==='reported' ? 'selected' : '' %>>Reported</option>
+          <option value="acknowledged" <%=status==='acknowledged' ? 'selected' : '' %>>Acknowledged</option>
+          <option value="in_progress" <%=status==='in_progress' ? 'selected' : '' %>>In Progress</option>
+          <option value="resolved" <%=status==='resolved' ? 'selected' : '' %>>Resolved</option>
+        </select>
+      </form>
+    </div>
+
+    <div id="issuesMap" class="map-box map-box-large"></div>
+
+    <% if (issues.length===0) { %>
+      <div class="empty-state">
+        <p>No issues reported yet in this filter. Be the first to flag something.</p>
+        <a href="/issues/new" class="btn btn-primary">Report an Issue</a>
+      </div>
+      <% } %>
+
+        <div class="issue-grid">
+          <% issues.forEach(issue=> { %>
+            <a href="/issues/<%= issue._id %>" class="issue-card">
+              <div class="issue-card-top">
+                <span class="tag tag-<%= issue.status %>">
+                  <%= issue.status.replace('_', ' ' ).toUpperCase() %>
+                </span>
+                <span class="issue-id">#CIV-<%= issue._id.toString().slice(-6).toUpperCase() %></span>
+              </div>
+              <h3>
+                <%= issue.title %>
+              </h3>
+              <p class="issue-meta">
+                <%= issue.category.replace('_', ' ' ) %> &middot; <%= issue.address || 'Location pinned' %>
+              </p>
+              <div class="issue-card-bottom">
+                <span class="upvote-count">▲ <%= issue.upvotes.length %></span>
+                <span class="reported-by">
+                  by <%= issue.reportedBy ? issue.reportedBy.username : "Unknown User" %>
+                </span>
+              </div>
+            </a>
+            <% }) %>
+        </div>
+  </section>
+
+    <script>
+    window.ISSUES_DATA = <% - JSON.stringify(issues.map(i => ({
+      id: i._id,
+      title: i.title,
+      category: i.category,
+      status: i.status,
+      lat: i.location.coordinates[1],
+      lng: i.location.coordinates[0]
+    }))) %>;
+
+  <script src="/js/map.js"></script>
+  </script>
+  <script src="/js/issues-map-init.js"></script>

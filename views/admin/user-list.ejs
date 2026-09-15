@@ -1,0 +1,48 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <span class="eyebrow">ADMIN &middot; PLATFORM</span>
+  <h1>User Management</h1>
+
+  <form method="GET" style="margin: 1.2rem 0;">
+    <input
+      type="text"
+      name="search"
+      value="<%= search %>"
+      placeholder="Search by username or email..."
+      style="padding: 0.65rem 0.9rem; border: 1px solid var(--border); border-radius: 6px; width: 320px; max-width: 100%;"
+    >
+    <button type="submit" class="btn btn-outline">Search</button>
+  </form>
+
+  <% if (users.length === 0) { %>
+    <div class="empty-state">
+      <p>No citizen accounts found<% if (search) { %> matching "<%= search %>"<% } %>.</p>
+    </div>
+  <% } else { %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Phone</th>
+          <th>Reports Filed</th><th>Joined</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+          <tr>
+            <td><%= user.username %></td>
+            <td><%= user.email %></td>
+            <td><%= user.phone || '—' %></td>
+            <td><%= user.issueCount %></td>
+            <td><%= new Date(user.createdAt).toLocaleDateString() %></td>
+            <td class="action-cell">
+              <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Remove this user account? Their reported issues will remain on record.')">
+                <button type="submit" class="btn btn-danger" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Remove</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</section>

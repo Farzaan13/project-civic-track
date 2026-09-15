@@ -1,0 +1,52 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="form-page">
+  <span class="eyebrow">NEW REPORT</span>
+  <h1>Report a Civic Issue</h1>
+  <p class="page-sub">Click on the map to drop a pin at the exact location of the issue.</p>
+
+  <form action="/issues" method="POST" enctype="multipart/form-data" class="form issue-form" id="issueForm">
+    <div class="form-grid">
+      <div class="form-col">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="e.g. Large pothole near bus stop" required>
+
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+          <option value="">Select category</option>
+          <option value="pothole">Pothole</option>
+          <option value="road_damage">Road Damage</option>
+          <option value="garbage">Garbage / Waste</option>
+          <option value="streetlight">Streetlight</option>
+          <option value="water_leakage">Water Leakage</option>
+          <option value="electricity">Electricity</option>
+          <option value="drainage">Drainage / Sewage</option>
+          <option value="other">Other</option>
+        </select>
+        <p class="ai-hint" id="aiHint"></p>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="4" placeholder="Describe the issue in detail..." required></textarea>
+
+        <label for="address">Address / Landmark</label>
+        <input type="text" id="address" name="address" placeholder="e.g. Near Green Park bus stop">
+
+        <label for="images">Photos (up to 3)</label>
+        <input type="file" id="images" name="images" accept="image/*" multiple>
+
+        <input type="hidden" id="lat" name="lat" required>
+        <input type="hidden" id="lng" name="lng" required>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit Report</button>
+      </div>
+
+      <div class="form-col">
+        <div id="pinMap" class="map-box"></div>
+        <p class="map-hint" id="mapHint">📍 Click anywhere on the map to mark the issue location</p>
+      </div>
+    </div>
+  </form>
+</section>
+
+<script src="/js/map.js"></script>
+<script src="/js/report-form.js"></script>

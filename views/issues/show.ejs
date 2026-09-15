@@ -1,0 +1,607 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="show-page">
+
+  <!-- HEADER -->
+  <div class="show-header">
+    <span class="issue-id-lg">
+      #CIV-<%= issue._id.toString().slice(-6).toUpperCase() %>
+    </span>
+
+    <span class="tag tag-<%= issue.status %>">
+      <%= issue.status.replace('_', ' ').toUpperCase() %>
+    </span>
+  </div>
+
+  <!-- TITLE -->
+  <h1><%= issue.title %></h1>
+
+  <p class="issue-meta-lg">
+    <%= issue.category.replace('_', ' ') %>
+    &middot;
+    Reported by <%= issue.reportedBy.username %>
+    &middot;
+    <%= issue.createdAt.toDateString() %>
+  </p>
+
+
+  <div class="show-grid">
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+    <div class="show-main">
+
+      <!-- IMAGES -->
+      <% if (issue.images && issue.images.length) { %>
+
+        <div class="image-gallery">
+
+          <% issue.images.forEach(img => { %>
+
+            <img
+              src="<%= img.url %>"
+              alt="Issue photo"
+            >
+
+          <% }) %>
+
+        </div>
+
+      <% } %>
+
+
+      <!-- DESCRIPTION -->
+      <h3 class="section-label">
+        Description
+      </h3>
+
+      <p class="description-text">
+        <%= issue.description %>
+      </p>
+
+
+      <!-- LOCATION -->
+      <% if (issue.address) { %>
+
+        <h3 class="section-label">
+          Location
+        </h3>
+
+        <p>
+          <%= issue.address %>
+        </p>
+
+      <% } %>
+
+
+      <!-- MAP -->
+      <div
+        id="detailMap"
+        class="map-box"
+      ></div>
+
+
+      <!-- STATUS TIMELINE -->
+      <h3 class="section-label">
+        Status Timeline
+      </h3>
+
+      <div class="timeline">
+
+        <% if (issue.statusHistory && issue.statusHistory.length) { %>
+
+          <% issue.statusHistory.slice().reverse().forEach(h => { %>
+
+            <div class="timeline-item">
+
+              <span class="timeline-dot"></span>
+
+              <div class="timeline-content">
+
+                <strong>
+                  <%= h.status.replace('_', ' ').toUpperCase() %>
+                </strong>
+
+                <span class="timeline-date">
+                  <%= new Date(h.timestamp).toLocaleString() %>
+                </span>
+
+                <% if (h.note) { %>
+
+                  <p>
+                    <%= h.note %>
+                  </p>
+
+                <% } %>
+
+                <% if (h.updatedBy) { %>
+
+                  <span class="timeline-by">
+                    by <%= h.updatedBy.username %>
+                  </span>
+
+                <% } %>
+
+              </div>
+
+            </div>
+
+          <% }) %>
+
+        <% } else { %>
+
+          <p class="muted">
+            No status updates yet.
+          </p>
+
+        <% } %>
+
+      </div>
+
+      <!-- RESOLUTION PROOF PHOTO (visible to everyone once resolved) -->
+      <% if (issue.resolutionImage && issue.resolutionImage.url) { %>
+        <h3 class="section-label">
+          Resolution Proof
+        </h3>
+        <div class="image-gallery">
+          <img src="<%= issue.resolutionImage.url %>" alt="Proof of resolution">
+        </div>
+      <% } %>
+
+
+      <!-- ==================================================
+           RESOLVE WITH PROOF PHOTO
+           Staff/admin only, when issue isn't resolved yet
+      =================================================== -->
+
+      <% if (
+        currUser &&
+        (currUser.role === 'admin' || currUser.role === 'staff') &&
+        issue.status !== 'resolved'
+      ) { %>
+
+        <div id="resolve" class="feedback-card feedback-card-staff">
+
+          <h3 class="section-label">
+            Mark as Resolved
+          </h3>
+
+          <p class="muted">
+            Upload a photo showing the issue has been fixed before marking it resolved.
+          </p>
+
+          <form
+            action="/admin/issues/<%= issue._id %>/status"
+            method="POST"
+            enctype="multipart/form-data"
+            class="form"
+          >
+            <input type="hidden" name="status" value="resolved">
+
+            <label for="proofImage">Proof Photo</label>
+            <input type="file" id="proofImage" name="proofImage" accept="image/*" required>
+
+            <label for="note">Note (optional)</label>
+            <textarea id="note" name="note" rows="3" placeholder="e.g. Pothole filled and road resurfaced"></textarea>
+
+            <button type="submit" class="btn btn-primary">Mark as Resolved</button>
+          </form>
+
+        </div>
+
+      <% } %>
+
+
+      <!-- ==================================================
+           FEEDBACK SECTION
+           Only complaint owner can give feedback
+           and only after issue is resolved
+      =================================================== -->
+
+      <% if (
+        currUser &&
+        issue.reportedBy &&
+        issue.reportedBy._id.equals(currUser._id) &&
+        issue.status === 'resolved'
+      ) { %>
+
+        <div class="feedback-card">
+
+          <h3 class="section-label">
+            Resolution Feedback
+          </h3>
+
+          <p class="muted">
+            Your complaint has been resolved.
+            Please tell us about your experience.
+          </p>
+
+
+          <!-- IF FEEDBACK ALREADY SUBMITTED -->
+          <% if (
+            issue.feedback &&
+            issue.feedback.submittedAt
+          ) { %>
+
+            <div class="feedback-submitted">
+
+              <h4>
+                Thank you for your feedback!
+              </h4>
+
+              <p>
+
+                <strong>
+                  Your Rating:
+                </strong>
+
+                <span class="rating-stars">
+                  <%= '⭐'.repeat(issue.feedback.rating) %>
+                </span>
+
+              </p>
+
+
+              <% if (issue.feedback.comment) { %>
+
+                <div class="feedback-comment">
+
+                  <strong>
+                    Your Comment:
+                  </strong>
+
+                  <p>
+                    <%= issue.feedback.comment %>
+                  </p>
+
+                </div>
+
+              <% } %>
+
+
+              <% if (issue.feedback.submittedAt) { %>
+
+                <small class="muted">
+
+                  Submitted on
+                  <%= new Date(
+                    issue.feedback.submittedAt
+                  ).toLocaleString() %>
+
+                </small>
+
+              <% } %>
+
+            </div>
+
+
+          <!-- FEEDBACK FORM -->
+          <% } else { %>
+
+            <form
+              action="/issues/<%= issue._id %>/feedback"
+              method="POST"
+              class="feedback-form"
+            >
+
+              <!-- RATING -->
+              <div class="form-group">
+
+                <label for="rating">
+                  How satisfied are you with the resolution?
+                </label>
+
+                <select
+                  id="rating"
+                  name="rating"
+                  required
+                >
+
+                  <option value="">
+                    Select a rating
+                  </option>
+
+                  <option value="5">
+                    ⭐⭐⭐⭐⭐ Excellent
+                  </option>
+
+                  <option value="4">
+                    ⭐⭐⭐⭐ Good
+                  </option>
+
+                  <option value="3">
+                    ⭐⭐⭐ Average
+                  </option>
+
+                  <option value="2">
+                    ⭐⭐ Poor
+                  </option>
+
+                  <option value="1">
+                    ⭐ Very Poor
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <!-- COMMENT -->
+              <div class="form-group">
+
+                <label for="comment">
+                  Your Feedback
+                </label>
+
+                <textarea
+                  id="comment"
+                  name="comment"
+                  rows="5"
+                  placeholder="Tell us about your experience..."
+                ></textarea>
+
+              </div>
+
+
+              <!-- SUBMIT -->
+              <button
+                type="submit"
+                class="btn btn-primary"
+              >
+                Submit Feedback
+              </button>
+
+            </form>
+
+          <% } %>
+
+        </div>
+
+      <% } %>
+
+    </div>
+
+    <!-- ==================================================
+           STAFF/ADMIN VIEW OF CITIZEN FEEDBACK
+           Visible to staff and admin regardless of who
+           reported the issue, once feedback is submitted
+      =================================================== -->
+
+      <% if (
+        currUser &&
+        (currUser.role === 'admin' || currUser.role === 'staff') &&
+        issue.feedback &&
+        issue.feedback.submittedAt
+      ) { %>
+
+        <div class="feedback-card feedback-card-staff">
+
+          <h3 class="section-label">
+            Citizen Feedback
+          </h3>
+
+          <p>
+            <strong>Rating:</strong>
+            <span class="rating-stars"><%= '⭐'.repeat(issue.feedback.rating) %> (<%= issue.feedback.rating %>/5)</span>
+          </p>
+
+          <% if (issue.feedback.comment) { %>
+            <div class="feedback-comment">
+              <strong>Comment:</strong>
+              <p><%= issue.feedback.comment %></p>
+            </div>
+          <% } else { %>
+            <p class="muted">No written comment left.</p>
+          <% } %>
+
+          <small class="muted">
+            Submitted on <%= new Date(issue.feedback.submittedAt).toLocaleString() %>
+          </small>
+
+        </div>
+
+      <% } %>
+
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+    <div class="show-sidebar">
+
+      <div class="sidebar-card">
+
+        <!-- UPVOTE -->
+        <% if (currUser) { %>
+
+          <form
+            action="/issues/<%= issue._id %>/upvote"
+            method="POST"
+          >
+
+            <button
+              type="submit"
+              class="btn btn-outline btn-block"
+            >
+              ▲ Upvote
+              (<%= issue.upvotes.length %>)
+            </button>
+
+          </form>
+
+        <% } else { %>
+
+          <p class="muted">
+            Login to upvote this issue
+          </p>
+
+        <% } %>
+
+
+        <!-- PRIORITY -->
+        <div class="sidebar-row">
+
+          <span class="stamp-label">
+            Priority
+          </span>
+
+          <span>
+            <%= ['', 'Low', 'Medium', 'High'][issue.priority] %>
+          </span>
+
+        </div>
+
+
+        <!-- DEPARTMENT -->
+        <% if (issue.assignedDept) { %>
+
+          <div class="sidebar-row">
+
+            <span class="stamp-label">
+              Department
+            </span>
+
+            <span>
+              <%= issue.assignedDept.name %>
+            </span>
+
+          </div>
+
+        <% } %>
+
+
+        <!-- STAFF -->
+        <% if (issue.assignedStaff) { %>
+
+          <div class="sidebar-row">
+
+            <span class="stamp-label">
+              Assigned to
+            </span>
+
+            <span>
+              <%= issue.assignedStaff.username %>
+            </span>
+
+          </div>
+
+        <% } %>
+
+
+        <!-- SLA -->
+        <% if (issue.slaDeadline) { %>
+
+          <div class="sidebar-row">
+
+            <span class="stamp-label">
+              SLA Deadline
+            </span>
+
+            <span>
+              <%= new Date(
+                issue.slaDeadline
+              ).toLocaleDateString() %>
+            </span>
+
+          </div>
+
+        <% } %>
+
+
+        <!-- AI CATEGORY -->
+        <% if (issue.aiSuggestedCategory) { %>
+
+          <div class="sidebar-row">
+
+            <span class="stamp-label">
+              AI Suggested
+            </span>
+
+            <span>
+              <%= issue.aiSuggestedCategory %>
+            </span>
+
+          </div>
+
+        <% } %>
+
+
+        <!-- FEEDBACK STATUS -->
+        <% if (
+          issue.status === 'resolved' &&
+          issue.feedback &&
+          issue.feedback.submittedAt
+        ) { %>
+
+          <div class="sidebar-row">
+
+            <span class="stamp-label">
+              Feedback
+            </span>
+
+            <span>
+              ⭐ <%= issue.feedback.rating %>/5
+            </span>
+
+          </div>
+
+        <% } %>
+
+      </div>
+
+
+      <!-- DELETE ISSUE -->
+      <% if (
+        currUser &&
+        (
+          currUser.role === 'admin' ||
+          (
+            issue.reportedBy &&
+            issue.reportedBy._id.equals(currUser._id)
+          )
+        )
+      ) { %>
+
+        <form
+          action="/issues/<%= issue._id %>?_method=DELETE"
+          method="POST"
+          onsubmit="return confirm('Delete this issue?')"
+        >
+
+          <button
+            type="submit"
+            class="btn btn-danger btn-block"
+          >
+            Delete Issue
+          </button>
+
+        </form>
+
+      <% } %>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================
+     MAP JAVASCRIPT
+========================== -->
+
+<script src="/js/map.js"></script>
+
+<script>
+
+  window.ISSUE_LOCATION = {
+    lat: <%= issue.location.coordinates[1] %>,
+    lng: <%= issue.location.coordinates[0] %>,
+    title: <%- JSON.stringify(issue.title) %>
+  };
+
+</script>
+
+<script src="/js/issue-detail-map-init.js"></script>

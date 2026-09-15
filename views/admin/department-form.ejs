@@ -1,0 +1,36 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="form-page">
+  <span class="eyebrow">ADMIN &middot; STRUCTURE</span>
+  <h1><%= department ? 'Edit Department' : 'New Department' %></h1>
+
+  <div class="auth-card" style="margin: 0;">
+    <form
+      action="<%= department ? `/admin/departments/${department._id}?_method=PUT` : '/admin/departments' %>"
+      method="POST"
+      class="form"
+    >
+      <label for="name">Department Name</label>
+      <input type="text" id="name" name="name" value="<%= department ? department.name : '' %>" placeholder="e.g. Roads & Infrastructure" required>
+
+      <label>Categories Handled</label>
+      <% categoryOptions.forEach(cat => { %>
+        <label style="font-weight: 400; display: flex; align-items: center; gap: 0.5rem; margin: 0.35rem 0;">
+          <input
+            type="checkbox"
+            name="categories"
+            value="<%= cat %>"
+            style="width: auto;"
+            <%= department && department.categories.includes(cat) ? 'checked' : '' %>
+          >
+          <%= cat.replace('_', ' ') %>
+        </label>
+      <% }) %>
+
+      <label for="slaHours">SLA (hours to resolve)</label>
+      <input type="number" id="slaHours" name="slaHours" min="1" value="<%= department ? department.slaHours : 72 %>" required>
+
+      <button type="submit" class="btn btn-primary btn-block"><%= department ? 'Save Changes' : 'Create Department' %></button>
+    </form>
+  </div>
+</section>

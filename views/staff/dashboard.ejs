@@ -1,0 +1,64 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <span class="eyebrow">STAFF &middot; DEPARTMENT OVERVIEW</span>
+  <h1>Dashboard</h1>
+
+  <% if (noDepartment) { %>
+    <div class="empty-state">
+      <p>You aren't assigned to a department yet. Contact your admin to get set up.</p>
+    </div>
+  <% } else { %>
+    <div class="stats-row">
+      <div class="stat-box"><span class="stat-num"><%= stats.deptTotal %></span><span class="stat-label">Department Total</span></div>
+      <div class="stat-box"><span class="stat-num"><%= stats.myAssigned %></span><span class="stat-label">Assigned To Me</span></div>
+      <div class="stat-box"><span class="stat-num"><%= stats.deptResolved %></span><span class="stat-label">Resolved</span></div>
+      <div class="stat-box stat-danger"><span class="stat-num"><%= stats.deptOverdue %></span><span class="stat-label">Overdue</span></div>
+    </div>
+
+    <div class="issues-header">
+      <h3 class="section-label" style="margin-top: 1rem;">Quick Links</h3>
+    </div>
+    <div class="steps-grid" style="margin-bottom: 2rem;">
+      <a href="/staff/assigned" class="step-card">
+        <span class="step-num">→</span>
+        <h3>My Assigned Issues</h3>
+        <p>Issues specifically assigned to you.</p>
+      </a>
+      <a href="/staff/department" class="step-card">
+        <span class="step-num">→</span>
+        <h3>Department Issues</h3>
+        <p>All issues routed to your department.</p>
+      </a>
+      <a href="/admin/dashboard" class="step-card">
+        <span class="step-num">→</span>
+        <h3>Manage Issues</h3>
+        <p>Update statuses and mark issues resolved.</p>
+      </a>
+    </div>
+
+    <h3 class="section-label">Recent in Department</h3>
+    <% if (recentIssues.length === 0) { %>
+      <div class="empty-state">
+        <p>No issues in your department yet.</p>
+      </div>
+    <% } else { %>
+      <div class="issue-grid">
+        <% recentIssues.forEach(issue => { %>
+          <a href="/issues/<%= issue._id %>" class="issue-card">
+            <div class="issue-card-top">
+              <span class="tag tag-<%= issue.status %>"><%= issue.status.replace('_', ' ').toUpperCase() %></span>
+              <span class="issue-id">#CIV-<%= issue._id.toString().slice(-6).toUpperCase() %></span>
+            </div>
+            <h3><%= issue.title %></h3>
+            <p class="issue-meta"><%= issue.category.replace('_', ' ') %></p>
+            <div class="issue-card-bottom">
+              <span class="upvote-count">▲ <%= issue.upvotes.length %></span>
+              <span class="reported-by">by <%= issue.reportedBy.username %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  <% } %>
+</section>

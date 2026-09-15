@@ -1,0 +1,71 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <div class="issues-header">
+    <div>
+      <span class="eyebrow">CONTROL ROOM</span>
+      <h1>Dashboard</h1>
+    </div>
+    <% if (currUser.role === 'admin') { %>
+      <a href="/admin/staff/new" class="btn btn-primary">+ Create Staff Account</a>
+    <% } %>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><span class="stat-num"><%= stats.total %></span><span class="stat-label">Total</span></div>
+    <div class="stat-box"><span class="stat-num"><%= stats.reported %></span><span class="stat-label">Reported</span></div>
+    <div class="stat-box"><span class="stat-num"><%= stats.inProgress %></span><span class="stat-label">In Progress</span></div>
+    <div class="stat-box"><span class="stat-num"><%= stats.resolved %></span><span class="stat-label">Resolved</span></div>
+    <div class="stat-box stat-danger"><span class="stat-num"><%= stats.overdue %></span><span class="stat-label">Overdue</span></div>
+  </div>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th><th>Title</th><th>Category</th><th>Priority</th>
+        <th>Status</th><th>Rating</th><th>Department</th><th>Assigned</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% issues.forEach(issue => { %>
+        <tr>
+          <td><a href="/issues/<%= issue._id %>">#<%= issue._id.toString().slice(-6).toUpperCase() %></a></td>
+          <td><%= issue.title %></td>
+          <td><%= issue.category.replace('_',' ') %></td>
+          <td><%= ['', 'Low', 'Medium', 'High'][issue.priority] %></td>
+          <td><span class="tag tag-<%= issue.status %>"><%= issue.status.replace('_',' ') %></span></td>
+            <td>
+            <% if (issue.feedback && issue.feedback.submittedAt) { %>
+              <span class="rating-stars" title="<%= issue.feedback.comment || 'No comment' %>">⭐ <%= issue.feedback.rating %>/5</span>
+            <% } else { %>
+              <span class="muted">—</span>
+            <% } %>
+          </td>
+          <td><%= issue.assignedDept ? issue.assignedDept.name : '—' %></td>
+          <td><%= issue.assignedStaff ? issue.assignedStaff.username : '—' %></td>
+          <td class="action-cell">
+        <form action="/admin/issues/<%= issue._id %>/status" method="POST" class="inline-form">
+              <select name="status" onchange="if (this.value === 'resolved') { window.location.href = '/issues/<%= issue._id %>#resolve'; } else { this.form.submit(); }">
+                <option value="reported" <%= issue.status==='reported'?'selected':'' %>>Reported</option>
+                <option value="acknowledged" <%= issue.status==='acknowledged'?'selected':'' %>>Acknowledged</option>
+                <option value="in_progress" <%= issue.status==='in_progress'?'selected':'' %>>In Progress</option>
+                <option value="resolved" <%= issue.status==='resolved'?'selected':'' %>>Resolved</option>
+                <option value="rejected" <%= issue.status==='rejected'?'selected':'' %>>Rejected</option>
+              </select>
+            </form>
+            <% if (currUser.role === 'admin') { %>
+              <form action="/admin/issues/<%= issue._id %>/assign" method="POST" class="inline-form">
+                <select name="staffId" onchange="this.form.submit()">
+                  <option value="">Assign staff...</option>
+                  <% staffList.forEach(s => { %>
+                    <option value="<%= s._id %>" <%= issue.assignedStaff && issue.assignedStaff._id.equals(s._id) ? 'selected':'' %>><%= s.username %></option>
+                  <% }) %>
+                </select>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>

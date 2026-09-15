@@ -1,0 +1,26 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="auth-wrap">
+  <div class="auth-card">
+    <span class="eyebrow">JOIN CIVICTRACK</span>
+    <h1 class="auth-title">Create Account</h1>
+
+    <form action="/register" method="POST" class="form">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autofocus>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="phone">Phone (optional)</label>
+      <input type="tel" id="phone" name="phone">
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required minlength="6">
+
+      <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="/login">Login</a></p>
+  </div>
+</section>

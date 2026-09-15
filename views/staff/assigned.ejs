@@ -1,0 +1,29 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="issues-page">
+  <span class="eyebrow">STAFF</span>
+  <h1>My Assigned Issues</h1>
+
+  <% if (issues.length === 0) { %>
+    <div class="empty-state">
+      <p>No issues are currently assigned to you.</p>
+    </div>
+  <% } else { %>
+    <div class="issue-grid">
+      <% issues.forEach(issue => { %>
+        <a href="/issues/<%= issue._id %>" class="issue-card">
+          <div class="issue-card-top">
+            <span class="tag tag-<%= issue.status %>"><%= issue.status.replace('_', ' ').toUpperCase() %></span>
+            <span class="issue-id">#CIV-<%= issue._id.toString().slice(-6).toUpperCase() %></span>
+          </div>
+          <h3><%= issue.title %></h3>
+          <p class="issue-meta"><%= issue.category.replace('_', ' ') %> &middot; <%= issue.address || 'Location pinned' %></p>
+          <div class="issue-card-bottom">
+            <span class="upvote-count">▲ <%= issue.upvotes.length %></span>
+            <span class="reported-by">by <%= issue.reportedBy.username %></span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</section>

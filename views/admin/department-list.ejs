@@ -1,0 +1,44 @@
+<% layout('layouts/boilerplate') %>
+
+<section class="dashboard-page">
+  <div class="issues-header">
+    <div>
+      <span class="eyebrow">ADMIN &middot; STRUCTURE</span>
+      <h1>Department Management</h1>
+    </div>
+    <a href="/admin/departments/new" class="btn btn-primary">+ New Department</a>
+  </div>
+
+  <% if (departments.length === 0) { %>
+    <div class="empty-state">
+      <p>No departments set up yet.</p>
+      <a href="/admin/departments/new" class="btn btn-primary">Create the first one</a>
+    </div>
+  <% } else { %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Categories</th><th>SLA (hrs)</th>
+          <th>Staff</th><th>Issues</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% departments.forEach(dept => { %>
+          <tr>
+            <td><%= dept.name %></td>
+            <td><%= dept.categories.map(c => c.replace('_', ' ')).join(', ') || '—' %></td>
+            <td><%= dept.slaHours %></td>
+            <td><%= dept.staffCount %></td>
+            <td><%= dept.issueCount %></td>
+            <td class="action-cell">
+              <a href="/admin/departments/<%= dept._id %>/edit" class="btn btn-outline" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Edit</a>
+              <form action="/admin/departments/<%= dept._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this department?')">
+                <button type="submit" class="btn btn-danger" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
