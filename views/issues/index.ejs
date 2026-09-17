@@ -62,16 +62,5 @@
         </div>
   </section>
 
-    <script>
-    window.ISSUES_DATA = <% - JSON.stringify(issues.map(i => ({
-      id: i._id,
-      title: i.title,
-      category: i.category,
-      status: i.status,
-      lat: i.location.coordinates[1],
-      lng: i.location.coordinates[0]
-    }))) %>;
-
-  <script src="/js/map.js"></script>
-  </script>
+    
   <script src="/js/issues-map-init.js"></script>
